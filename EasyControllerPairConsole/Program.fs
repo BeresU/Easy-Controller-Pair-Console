@@ -6,17 +6,31 @@ open BluetoothService
 let main _ =
 
     // TODO: consider doing this in parallel and let the user interact with the app
+    // TODO: merge similar methods to minimize boiler plate.
     let showAvailableControllers () =
-        printfn "\nshowing available controllers"
+        printfn "\nsearching for devices..."
+        let devices = getAllAvailableDevices ()
+
+        match devices.Length with
+        | 0 -> printfn "\nno available devices!"
+        | _ ->
+            printfn "\navailable devices:"
+
+            devices
+            |> List.map (fun device -> device.DeviceName)
+            |> List.iter (fun device -> printfn $"\t%s{device}\n")
+
 
     let showPairedControllers () =
         let devices = getAllPairedDevices ()
 
         match devices.Length with
-        | 0 -> printfn "No devices are paired!"
+        | 0 -> printfn "\nno devices are paired!"
         | _ ->
             printfn "\nPaired devices:"
+
             devices
+            |> List.map (fun device -> $"name: %s{device.DeviceName}, connected: %b{device.Connected}, address: %s{device.DeviceAddress.ToString()}")
             |> List.iter (fun device -> printfn $"\t%s{device}\n")
 
     // TODO: handle wrong input case.
@@ -47,7 +61,8 @@ let main _ =
         printfn "\nreconnecting all paired controllers" // TODO: log all controllers
 
     let showHelpText () =
-        printfn "
+        printfn
+            "
         press t/T to show available controllers to pair
         press y/Y to show paired controllers
         press u/U to pair a controller

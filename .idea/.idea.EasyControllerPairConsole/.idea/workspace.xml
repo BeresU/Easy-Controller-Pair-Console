@@ -5,6 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="15d688f6-0612-44c1-8472-94551d7ca6f1" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.EasyControllerPairConsole/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.EasyControllerPairConsole/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EasyControllerPairConsole/BluetoothService/32FeetWrapper.fs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyControllerPairConsole/BluetoothService/32FeetWrapper.fs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EasyControllerPairConsole/Program.fs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyControllerPairConsole/Program.fs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -25,8 +27,13 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8c5d964499a04c04b2b151bbd137532725590/f7/8b504c13/ConsoleKey.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/a04f230bceee4afb8f331c4dc056293969600/90/bfc0764f/BluetoothAddress.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/a04f230bceee4afb8f331c4dc056293969600/8f/aba97ec4/BluetoothClient.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/a04f230bceee4afb8f331c4dc056293969600/e4/7c2c73c8/BluetoothDeviceInfo.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/8c5d964499a04c04b2b151bbd137532725590/4/Console.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/a04f230bceee4afb8f331c4dc056293969600/a6/6b89d04f/IBluetoothClient.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/8c5d964499a04c04b2b151bbd137532725590/6/ConsoleKeyInfo.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/a04f230bceee4afb8f331c4dc056293969600/4f/d2529a40/BluetoothSecurity.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProjectId" id="1zxwT1uqOEzlc8eoBMyzSfixxcR" />
   <component name="ProjectViewState">
@@ -74,7 +81,7 @@
       <workItem from="1635103133007" duration="5094000" />
       <workItem from="1635187940524" duration="7063000" />
       <workItem from="1635309989343" duration="10162000" />
-      <workItem from="1635608835685" duration="5573000" />
+      <workItem from="1635608835685" duration="8568000" />
     </task>
     <servers />
   </component>
