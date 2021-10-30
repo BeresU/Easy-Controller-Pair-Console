@@ -5,7 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="15d688f6-0612-44c1-8472-94551d7ca6f1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/EasyControllerPairConsole/BluetoothService/32FeetWrapper.fs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.EasyControllerPairConsole/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.EasyControllerPairConsole/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EasyControllerPairConsole/EasyControllerPairConsole.fsproj" beforeDir="false" afterPath="$PROJECT_DIR$/EasyControllerPairConsole/EasyControllerPairConsole.fsproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EasyControllerPairConsole/Program.fs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyControllerPairConsole/Program.fs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -24,12 +26,19 @@
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8c5d964499a04c04b2b151bbd137532725590/f7/8b504c13/ConsoleKey.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/8c5d964499a04c04b2b151bbd137532725590/4/Console.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/8c5d964499a04c04b2b151bbd137532725590/6/ConsoleKeyInfo.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
   <component name="ProjectId" id="1zxwT1uqOEzlc8eoBMyzSfixxcR" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="DebuggerViewTab_PTCS_FirstProportionKey" value="0.34994584" />
+    <property name="DebuggerViewTab_PTCS_LastProportionKey" value="0.0" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -65,7 +74,10 @@
       <option name="presentableId" value="Default" />
       <updated>1635103052214</updated>
       <workItem from="1635103056437" duration="5000" />
-      <workItem from="1635103133007" duration="4216000" />
+      <workItem from="1635103133007" duration="5094000" />
+      <workItem from="1635187940524" duration="7063000" />
+      <workItem from="1635309989343" duration="10162000" />
+      <workItem from="1635608835685" duration="5491000" />
     </task>
     <servers />
   </component>
@@ -75,6 +87,18 @@
   <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="UnityUnitTestConfiguration" currentTestLauncher="NUnit" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
   </component>
