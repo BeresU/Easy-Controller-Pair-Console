@@ -16,7 +16,6 @@ let main _ =
         | 0 -> printfn "No devices are paired!"
         | _ ->
             printfn "\nPaired devices:"
-
             devices
             |> List.iter (fun device -> printfn $"\t%s{device}\n")
 

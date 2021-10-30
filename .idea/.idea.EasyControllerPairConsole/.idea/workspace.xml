@@ -5,9 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="15d688f6-0612-44c1-8472-94551d7ca6f1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/EasyControllerPairConsole/BluetoothService/32FeetWrapper.fs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.EasyControllerPairConsole/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.EasyControllerPairConsole/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyControllerPairConsole/EasyControllerPairConsole.fsproj" beforeDir="false" afterPath="$PROJECT_DIR$/EasyControllerPairConsole/EasyControllerPairConsole.fsproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EasyControllerPairConsole/Program.fs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyControllerPairConsole/Program.fs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -77,7 +74,7 @@
       <workItem from="1635103133007" duration="5094000" />
       <workItem from="1635187940524" duration="7063000" />
       <workItem from="1635309989343" duration="10162000" />
-      <workItem from="1635608835685" duration="5491000" />
+      <workItem from="1635608835685" duration="5573000" />
     </task>
     <servers />
   </component>
