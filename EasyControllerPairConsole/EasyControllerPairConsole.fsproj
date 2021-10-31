@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <Compile Include="BluetoothService\32FeetWrapper.fs" />
+        <Compile Include="BluetoothService\Cache.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

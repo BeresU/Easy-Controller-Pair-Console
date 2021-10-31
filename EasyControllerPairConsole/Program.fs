@@ -4,7 +4,6 @@ open BluetoothService
 
 [<EntryPoint>]
 let main _ =
-
     // TODO: consider doing this in parallel and let the user interact with the app
     // TODO: merge similar methods to minimize boiler plate.
     let showAvailableControllers () =
@@ -17,8 +16,8 @@ let main _ =
             printfn "\navailable devices:"
 
             devices
-            |> List.map (fun device -> device.DeviceName)
-            |> List.iter (fun device -> printfn $"\t%s{device}\n")
+            |> List.iter
+                (fun device -> printfn $"\t%s{device.DeviceName}, address: %s{device.DeviceAddress.ToString()}\n")
 
 
     let showPairedControllers () =
@@ -30,7 +29,9 @@ let main _ =
             printfn "\nPaired devices:"
 
             devices
-            |> List.map (fun device -> $"name: %s{device.DeviceName}, connected: %b{device.Connected}, address: %s{device.DeviceAddress.ToString()}")
+            |> List.map
+                (fun device ->
+                    $"name: %s{device.DeviceName}, connected: %b{device.Connected}, address: %s{device.DeviceAddress.ToString()}")
             |> List.iter (fun device -> printfn $"\t%s{device}\n")
 
     // TODO: handle wrong input case.
@@ -60,6 +61,7 @@ let main _ =
     let reconnectAllControllers () =
         printfn "\nreconnecting all paired controllers" // TODO: log all controllers
 
+    // TODO: load from file (for practice)
     let showHelpText () =
         printfn
             "
@@ -72,6 +74,7 @@ let main _ =
         press j/J to remove all the controllers that are paired
         press k/K to reconnect all the controllers that are paired"
 
+    // TODO: create config file
     let rec checkForKeys (key: ConsoleKey) =
         match key with
         | ConsoleKey.T ->
@@ -106,6 +109,6 @@ let main _ =
             printfn "\nWrong key pressed!"
             checkForKeys (Console.ReadKey().Key)
 
-    printfn "please select a key. press h for help, press q to exist\n"
+    printfn "please select a key. press h for help and press q to exist\n"
     checkForKeys (Console.ReadKey().Key)
     0
