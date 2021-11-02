@@ -26,10 +26,12 @@ module BluetoothService =
 
     let pairAllControllers () = failwith "todo"
 
-    let pairController (deviceAddress: BluetoothAddress, pin: string) =
+    // TODO: this is a pair request
+    let pairController (deviceAddress: BluetoothAddress) (pin: string) =
         BluetoothSecurity.PairRequest(deviceAddress, pin)
 
+    // TODO: remove
+    let removePairedController deviceAddress = BluetoothSecurity.RemoveDevice(deviceAddress)
     let reconnectAllControllers () = failwith "todo"
     let reconnectController (controllerName) = failwith "todo"
     let removeAllControllers () = failwith "todo"
-    let removePairedController (controllerName) = failwith "todo"

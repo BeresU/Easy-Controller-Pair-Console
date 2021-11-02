@@ -13,9 +13,11 @@ let main _ =
         let devices = getAllAvailableDevices ()
 
         match devices.Length with
-        | 0 -> printfn "\nno available devices!"
+        | 0 ->
+            printfn "no available devices!"
+            false
         | _ ->
-            printfn "\navailable devices:"
+            printfn "available devices:"
 
             let devicesToCache =
                 devices
@@ -39,30 +41,61 @@ let main _ =
             devicesToCache
             |> List.iter
                 (fun device ->
-                    printfn
-                        $"\t%s{device.DeviceKey}, address: %s{device.DeviceData.DeviceAddress.ToString()}\n")
+                    printfn $"\t* %s{device.DeviceKey}, address: %s{device.DeviceData.DeviceAddress.ToString()}")
+
+            true
 
 
     let showPairedControllers () =
         let devices = getAllPairedDevices ()
 
         match devices.Length with
-        | 0 -> printfn "\nno devices are paired!"
+        | 0 ->
+            printfn "\nno devices are paired!"
+            false
         | _ ->
-            printfn "\nPaired devices:"
+            printfn "\npaired devices:"
 
             devices
             |> List.map
                 (fun device ->
                     $"name: %s{device.DeviceName}, connected: %b{device.Connected}, address: %s{device.DeviceAddress.ToString()}")
             |> List.iter (fun device -> printfn $"\t%s{device}\n")
+            true
 
-    // TODO: handle wrong input case.
-    // TODO: back if no input
-    let pairControllerByName () =
-        printfn "\nplease insert controller name, empty name will bring you back"
-        let input = Console.ReadLine()
-        printfn $"pairing controller: %s{input}"
+
+    let rec pairControllerByName () =
+
+        match cacheIsEmpty () with
+        | true ->
+            match showAvailableControllers () with
+            | true -> pairControllerByName ()
+            | false -> () // return
+        | false ->
+            printfn "\nplease insert controller name, empty name will bring you back"
+            let input = Console.ReadLine()
+
+            match existInCache input with
+            | true ->
+                printfn "pairing controller"
+                let device = getDeviceFromCache input
+
+                let success =
+                    pairController device.DeviceAddress "5555"
+
+                match success with
+                | true ->
+                    printfn $"connected %s{input}"
+                    removeFromCache input |> ignore
+
+                | false -> printfn $"something went wrong, couldn't connect %s{input}"
+            | false ->
+                match String.IsNullOrEmpty input with
+                | true -> () // return
+                | false ->
+                    printfn $"%s{input} is no valid controller"
+                    pairControllerByName ()
+
 
     // TODO: handle wrong input case.
     // TODO: back if no input
@@ -98,39 +131,45 @@ let main _ =
         press k/K to reconnect all the controllers that are paired"
 
     // TODO: create config file
+    // TODO show help message each time when return to this method.
     let rec checkForKeys (key: ConsoleKey) =
+        
+        let onInputProcessFinished() =
+            printfn "\nplease select a key. press h for help and press q to exist\n"
+            checkForKeys (Console.ReadKey().Key)
+            
         match key with
         | ConsoleKey.T ->
-            showAvailableControllers ()
-            checkForKeys (Console.ReadKey().Key)
+            showAvailableControllers () |> ignore
+            onInputProcessFinished()
         | ConsoleKey.Y ->
-            showPairedControllers ()
-            checkForKeys (Console.ReadKey().Key)
+            showPairedControllers () |> ignore
+            onInputProcessFinished()
         | ConsoleKey.U ->
             pairControllerByName ()
-            checkForKeys (Console.ReadKey().Key)
+            onInputProcessFinished()
         | ConsoleKey.I ->
             removeControllerByName ()
-            checkForKeys (Console.ReadKey().Key)
+            onInputProcessFinished()
         | ConsoleKey.O ->
             reconnectController ()
-            checkForKeys (Console.ReadKey().Key)
+            onInputProcessFinished()
         | ConsoleKey.P ->
             connectAllControllers ()
-            checkForKeys (Console.ReadKey().Key)
+            onInputProcessFinished()
         | ConsoleKey.J ->
             removeAllControllers ()
-            checkForKeys (Console.ReadKey().Key)
+            onInputProcessFinished()
         | ConsoleKey.K ->
             reconnectAllControllers ()
-            checkForKeys (Console.ReadKey().Key)
+            onInputProcessFinished()
         | ConsoleKey.H ->
             showHelpText ()
-            checkForKeys (Console.ReadKey().Key)
+            onInputProcessFinished()
         | ConsoleKey.Q -> ()
         | _ ->
-            printfn "\nWrong key pressed!"
-            checkForKeys (Console.ReadKey().Key)
+            printfn "\nwrong key pressed!"
+            onInputProcessFinished()
 
     printfn "please select a key. press h for help and press q to exist\n"
     checkForKeys (Console.ReadKey().Key)
