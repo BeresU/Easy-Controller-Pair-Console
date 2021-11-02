@@ -25,3 +25,4 @@ module Cache =
         cache.Clear()
         devices
         |> List.iter (fun device -> cache.Add(device.DeviceKey, device.DeviceData))
+               

@@ -1,9 +1,11 @@
 open System
 open BluetoothService
 open BluetoothService
+open Cache
 
 [<EntryPoint>]
 let main _ =
+
     // TODO: consider doing this in parallel and let the user interact with the app
     // TODO: merge similar methods to minimize boiler plate.
     let showAvailableControllers () =
@@ -15,9 +17,30 @@ let main _ =
         | _ ->
             printfn "\navailable devices:"
 
-            devices
+            let devicesToCache =
+                devices
+                |> List.groupBy (fun device -> device.DeviceName)
+                |> List.map snd
+                |> List.collect
+                    (fun list ->
+                        list
+                        |> List.mapi
+                            (fun index device ->
+                                match index with
+                                | 0 ->
+                                    { DeviceKey = device.DeviceName
+                                      DeviceData = device }
+                                | _ ->
+                                    { DeviceKey = $"%s{device.DeviceName} %d{index}"
+                                      DeviceData = device }))
+
+            saveToCache devicesToCache
+
+            devicesToCache
             |> List.iter
-                (fun device -> printfn $"\t%s{device.DeviceName}, address: %s{device.DeviceAddress.ToString()}\n")
+                (fun device ->
+                    printfn
+                        $"\t%s{device.DeviceKey}, address: %s{device.DeviceData.DeviceAddress.ToString()}\n")
 
 
     let showPairedControllers () =
