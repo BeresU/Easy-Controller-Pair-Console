@@ -24,11 +24,12 @@ let main _ =
                             { DeviceKey = $"%s{device.DeviceName} %d{index}"
                               DeviceData = device }))
 
-
+    let insertDeviceMessage =
+        "\nplease insert device name, empty name will bring you back"
 
     // TODO: consider doing this in parallel and let the user interact with the app
     // TODO: merge similar methods to minimize boiler plate.
-    let showAvailableControllers () =
+    let showAvailableDevices () =
         printfn "\nsearching for devices..."
         let devices = getAllAvailableDevices ()
 
@@ -37,22 +38,18 @@ let main _ =
             printfn "no available devices!"
             false
         | _ ->
-
             let devicesToCache = mapToDeviceData devices
-
             saveToCache devicesToCache
-
             printfn "available devices:"
 
             devicesToCache
             |> List.iter
                 (fun device ->
-                    printfn $"\t* %s{device.DeviceKey}, address: %s{device.DeviceData.DeviceAddress.ToString()}")
+                    printfn $"\t* name: %s{device.DeviceKey}, address: %s{device.DeviceData.DeviceAddress.ToString()}")
 
             true
 
-
-    let showPairedControllers () =
+    let showPairedDevices () =
         let devices = getAllPairedDevices ()
 
         match devices.Length with
@@ -67,54 +64,48 @@ let main _ =
             |> List.iter
                 (fun device ->
                     printfn
-                        $"\tname: %s{device.DeviceKey}, connected: %b{device.DeviceData.Connected}, address: %s{device.DeviceData.DeviceAddress.ToString()}\n")
+                        $"\t* name: %s{device.DeviceKey}, connected: %b{device.DeviceData.Connected}, address: %s{device.DeviceData.DeviceAddress.ToString()}\n")
 
             true
 
-
-    let rec pairControllerByName () =
-
+    let rec pairDeviceByName () =
         match cacheIsEmpty () with
         | true ->
-            match showAvailableControllers () with
-            | true -> pairControllerByName ()
+            match showAvailableDevices () with
+            | true -> pairDeviceByName ()
             | false -> () // return
         | false ->
-            printfn "\nplease insert controller name, empty name will bring you back"
+            printfn $"%s{insertDeviceMessage}"
             let input = Console.ReadLine()
 
             match existInCache input with
             | true ->
-                printfn "pairing controller"
+                printfn "pairing device"
                 let device = getDeviceFromCache input
 
                 let success =
                     pairController device.DeviceAddress "5555"
 
                 match success with
-                | true ->
-                    printfn $"connected %s{input}"
-                    removeFromCache input |> ignore
-
                 | false -> printfn $"something went wrong, couldn't connect %s{input}"
+                | true ->
+                    printfn $"%s{input} paired successfully"
+                    removeFromCache input |> ignore
             | false ->
                 match String.IsNullOrEmpty input with
                 | true -> () // return
                 | false ->
                     printfn $"%s{input} is no valid controller"
-                    pairControllerByName ()
+                    pairDeviceByName ()
 
-
-    // TODO: handle wrong input case.
-    // TODO: back if no input
-    let rec removeControllerByName () =
+    let rec removeDeviceByName () =
         let pairedDevices = getAllPairedDevices ()
 
         match pairedDevices.Length with
-        | 0 -> printfn "no device connected!"
+        | 0 -> printfn "no device are paired!"
         | _ ->
-            printfn "\nplease insert controller name, empty name will bring you back"
-            let input = Console.ReadLine() // TODO: maybe can reuse this
+            printfn $"%s{insertDeviceMessage}"
+            let input = Console.ReadLine() //
 
             match String.IsNullOrEmpty input with
             | true -> () // return
@@ -126,21 +117,64 @@ let main _ =
 
                 match selectedDevice.IsSome with
                 | true ->
-                    printfn $"removing controller: %s{input}"
+                    printfn $"removing device: %s{input}"
 
-                    match removePairedController selectedDevice.Value.DeviceData.DeviceAddress with
+                    match selectedDevice.Value.DeviceData.DeviceAddress
+                          |> removePairedController with
                     | true -> printfn $"device: %s{input} was removed"
                     | false -> printfn $"something went wrong, couldn't remove device: %s{input}"
-
                 | false ->
                     printfn $"The device: %s{input} is not valid please select device that is paired"
-                    removeControllerByName ()
+                    removeDeviceByName ()
 
+    let rec reconnectDevice () =
+        let pairedDevices = getAllPairedDevices ()
 
-    let reconnectController () =
-        printfn "\nplease insert controller name, empty name will bring you back" // TODO: cache string?
-        let input = Console.ReadLine() // TODO: maybe can reuse this
-        printfn $"reconnecting controller: %s{input}"
+        match pairedDevices.Length with
+        | 0 -> printfn "no device are paired!"
+        | _ ->
+            printfn $"%s{insertDeviceMessage}"
+            let input = Console.ReadLine()
+
+            match String.IsNullOrEmpty input with
+            | true -> () // return
+            | false ->
+                let selectedDevice =
+                    pairedDevices
+                    |> mapToDeviceData
+                    |> List.tryFind (fun device -> device.DeviceKey = input)
+
+                match selectedDevice.IsSome with
+                | false ->
+                    printfn $"The device: %s{input} is not valid please select device that is paired"
+                    reconnectDevice ()
+                | true ->
+                    printfn $"reconnecting device: %s{input}"
+
+                    match selectedDevice.Value.DeviceData.DeviceAddress
+                          |> removePairedController with
+                    | false -> printfn $"something went wrong, couldn't remove device: %s{input}"
+                    | true ->
+                        printfn $"device: %s{input} was removed"
+
+                        let availableDevice =
+                            getAllAvailableDevices ()
+                            |> mapToDeviceData
+                            |> List.tryFind (fun device -> device.DeviceKey = input)
+
+                        match availableDevice.IsSome with
+                        | false ->
+                            printfn
+                                $"couldn't find bluetooth signal of device: %s{input}, please make sure the device is active"
+                        | true ->
+                            printfn $"pairing device: %s{input}"
+
+                            let success =
+                                pairController availableDevice.Value.DeviceData.DeviceAddress "5555"
+
+                            match success with
+                            | false -> printfn $"couldn't connect device: %s{input}"
+                            | true -> printfn $"%s{input} paired successfully"
 
     let connectAllControllers () =
         printfn "connecting all available controllers" // TODO: log all controllers
@@ -173,19 +207,19 @@ let main _ =
 
         match key with
         | ConsoleKey.T ->
-            showAvailableControllers () |> ignore
+            showAvailableDevices () |> ignore
             onInputProcessFinished ()
         | ConsoleKey.Y ->
-            showPairedControllers () |> ignore
+            showPairedDevices () |> ignore
             onInputProcessFinished ()
         | ConsoleKey.U ->
-            pairControllerByName ()
+            pairDeviceByName ()
             onInputProcessFinished ()
         | ConsoleKey.I ->
-            removeControllerByName ()
+            removeDeviceByName ()
             onInputProcessFinished ()
         | ConsoleKey.O ->
-            reconnectController ()
+            reconnectDevice ()
             onInputProcessFinished ()
         | ConsoleKey.P ->
             connectAllControllers ()
