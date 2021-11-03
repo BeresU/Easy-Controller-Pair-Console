@@ -2,9 +2,29 @@ open System
 open BluetoothService
 open BluetoothService
 open Cache
+open InTheHand.Net.Sockets
 
 [<EntryPoint>]
 let main _ =
+
+    let mapToDeviceData (devices: BluetoothDeviceInfo list) =
+        devices
+        |> List.groupBy (fun device -> device.DeviceName)
+        |> List.map snd
+        |> List.collect
+            (fun list ->
+                list
+                |> List.mapi
+                    (fun index device ->
+                        match index with
+                        | 0 ->
+                            { DeviceKey = device.DeviceName
+                              DeviceData = device }
+                        | _ ->
+                            { DeviceKey = $"%s{device.DeviceName} %d{index}"
+                              DeviceData = device }))
+
+
 
     // TODO: consider doing this in parallel and let the user interact with the app
     // TODO: merge similar methods to minimize boiler plate.
@@ -17,26 +37,12 @@ let main _ =
             printfn "no available devices!"
             false
         | _ ->
-            printfn "available devices:"
 
-            let devicesToCache =
-                devices
-                |> List.groupBy (fun device -> device.DeviceName)
-                |> List.map snd
-                |> List.collect
-                    (fun list ->
-                        list
-                        |> List.mapi
-                            (fun index device ->
-                                match index with
-                                | 0 ->
-                                    { DeviceKey = device.DeviceName
-                                      DeviceData = device }
-                                | _ ->
-                                    { DeviceKey = $"%s{device.DeviceName} %d{index}"
-                                      DeviceData = device }))
+            let devicesToCache = mapToDeviceData devices
 
             saveToCache devicesToCache
+
+            printfn "available devices:"
 
             devicesToCache
             |> List.iter
@@ -57,10 +63,12 @@ let main _ =
             printfn "\npaired devices:"
 
             devices
-            |> List.map
+            |> mapToDeviceData
+            |> List.iter
                 (fun device ->
-                    $"name: %s{device.DeviceName}, connected: %b{device.Connected}, address: %s{device.DeviceAddress.ToString()}")
-            |> List.iter (fun device -> printfn $"\t%s{device}\n")
+                    printfn
+                        $"\tname: %s{device.DeviceKey}, connected: %b{device.DeviceData.Connected}, address: %s{device.DeviceData.DeviceAddress.ToString()}\n")
+
             true
 
 
@@ -99,10 +107,35 @@ let main _ =
 
     // TODO: handle wrong input case.
     // TODO: back if no input
-    let removeControllerByName () =
-        printfn "\nplease insert controller name, empty name will bring you back" // TODO: cache string?
-        let input = Console.ReadLine() // TODO: maybe can reuse this
-        printfn $"removing controller: %s{input}"
+    let rec removeControllerByName () =
+        let pairedDevices = getAllPairedDevices ()
+
+        match pairedDevices.Length with
+        | 0 -> printfn "no device connected!"
+        | _ ->
+            printfn "\nplease insert controller name, empty name will bring you back"
+            let input = Console.ReadLine() // TODO: maybe can reuse this
+
+            match String.IsNullOrEmpty input with
+            | true -> () // return
+            | false ->
+                let selectedDevice =
+                    pairedDevices
+                    |> mapToDeviceData
+                    |> List.tryFind (fun device -> device.DeviceKey = input)
+
+                match selectedDevice.IsSome with
+                | true ->
+                    printfn $"removing controller: %s{input}"
+
+                    match removePairedController selectedDevice.Value.DeviceData.DeviceAddress with
+                    | true -> printfn $"device: %s{input} was removed"
+                    | false -> printfn $"something went wrong, couldn't remove device: %s{input}"
+
+                | false ->
+                    printfn $"The device: %s{input} is not valid please select device that is paired"
+                    removeControllerByName ()
+
 
     let reconnectController () =
         printfn "\nplease insert controller name, empty name will bring you back" // TODO: cache string?
@@ -133,43 +166,43 @@ let main _ =
     // TODO: create config file
     // TODO show help message each time when return to this method.
     let rec checkForKeys (key: ConsoleKey) =
-        
-        let onInputProcessFinished() =
+
+        let onInputProcessFinished () =
             printfn "\nplease select a key. press h for help and press q to exist\n"
             checkForKeys (Console.ReadKey().Key)
-            
+
         match key with
         | ConsoleKey.T ->
             showAvailableControllers () |> ignore
-            onInputProcessFinished()
+            onInputProcessFinished ()
         | ConsoleKey.Y ->
             showPairedControllers () |> ignore
-            onInputProcessFinished()
+            onInputProcessFinished ()
         | ConsoleKey.U ->
             pairControllerByName ()
-            onInputProcessFinished()
+            onInputProcessFinished ()
         | ConsoleKey.I ->
             removeControllerByName ()
-            onInputProcessFinished()
+            onInputProcessFinished ()
         | ConsoleKey.O ->
             reconnectController ()
-            onInputProcessFinished()
+            onInputProcessFinished ()
         | ConsoleKey.P ->
             connectAllControllers ()
-            onInputProcessFinished()
+            onInputProcessFinished ()
         | ConsoleKey.J ->
             removeAllControllers ()
-            onInputProcessFinished()
+            onInputProcessFinished ()
         | ConsoleKey.K ->
             reconnectAllControllers ()
-            onInputProcessFinished()
+            onInputProcessFinished ()
         | ConsoleKey.H ->
             showHelpText ()
-            onInputProcessFinished()
+            onInputProcessFinished ()
         | ConsoleKey.Q -> ()
         | _ ->
             printfn "\nwrong key pressed!"
-            onInputProcessFinished()
+            onInputProcessFinished ()
 
     printfn "please select a key. press h for help and press q to exist\n"
     checkForKeys (Console.ReadKey().Key)
