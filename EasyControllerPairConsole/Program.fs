@@ -67,12 +67,13 @@ let main _ =
                         $"\t* name: %s{device.DeviceKey}, connected: %b{device.DeviceData.Connected}, address: %s{device.DeviceData.DeviceAddress.ToString()}\n")
 
             true
-
-    let rec pairDeviceByName () =
+            
+    
+    let rec pairDeviceByInput () =
         match cacheIsEmpty () with
         | true ->
             match showAvailableDevices () with
-            | true -> pairDeviceByName ()
+            | true -> pairDeviceByInput ()
             | false -> () // return
         | false ->
             printfn $"%s{insertDeviceMessage}"
@@ -84,7 +85,7 @@ let main _ =
                 let device = getDeviceFromCache input
 
                 let success =
-                    pairController device.DeviceAddress "5555"
+                    pairController device.DeviceData.DeviceAddress 
 
                 match success with
                 | false -> printfn $"something went wrong, couldn't connect %s{input}"
@@ -96,9 +97,9 @@ let main _ =
                 | true -> () // return
                 | false ->
                     printfn $"%s{input} is no valid controller"
-                    pairDeviceByName ()
+                    pairDeviceByInput ()
 
-    let rec removeDeviceByName () =
+    let rec removeDeviceByInput () =
         let pairedDevices = getAllPairedDevices ()
 
         match pairedDevices.Length with
@@ -125,64 +126,13 @@ let main _ =
                     | false -> printfn $"something went wrong, couldn't remove device: %s{input}"
                 | false ->
                     printfn $"The device: %s{input} is not valid please select device that is paired"
-                    removeDeviceByName ()
-
-    let rec reconnectDevice () =
-        let pairedDevices = getAllPairedDevices ()
-
-        match pairedDevices.Length with
-        | 0 -> printfn "no device are paired!"
-        | _ ->
-            printfn $"%s{insertDeviceMessage}"
-            let input = Console.ReadLine()
-
-            match String.IsNullOrEmpty input with
-            | true -> () // return
-            | false ->
-                let selectedDevice =
-                    pairedDevices
-                    |> mapToDeviceData
-                    |> List.tryFind (fun device -> device.DeviceKey = input)
-
-                match selectedDevice.IsSome with
-                | false ->
-                    printfn $"The device: %s{input} is not valid please select device that is paired"
-                    reconnectDevice ()
-                | true ->
-                    printfn $"reconnecting device: %s{input}"
-
-                    match selectedDevice.Value.DeviceData.DeviceAddress
-                          |> removePairedController with
-                    | false -> printfn $"something went wrong, couldn't remove device: %s{input}"
-                    | true ->
-                        printfn $"device: %s{input} was removed"
-
-                        let availableDevice =
-                            getAllAvailableDevices ()
-                            |> mapToDeviceData
-                            |> List.tryFind (fun device -> device.DeviceKey = input)
-
-                        match availableDevice.IsSome with
-                        | false ->
-                            printfn
-                                $"couldn't find bluetooth signal of device: %s{input}, please make sure the device is active"
-                        | true ->
-                            printfn $"pairing device: %s{input}"
-
-                            let success =
-                                pairController availableDevice.Value.DeviceData.DeviceAddress "5555"
-
-                            match success with
-                            | false -> printfn $"couldn't connect device: %s{input}"
-                            | true -> printfn $"%s{input} paired successfully"
+                    removeDeviceByInput ()
 
     let connectAllControllers () =
         printfn "connecting all available controllers" // TODO: log all controllers
 
     let removeAllControllers () = printfn "removing all controllers" // TODO: log all controllers
 
-    let reconnectAllControllers () =
-        printfn "\nreconnecting all paired controllers" // TODO: log all controllers
 
     // TODO: load from file (for practice)
     let showHelpText () =
@@ -192,10 +142,8 @@ let main _ =
         press y/Y to show paired controllers
         press u/U to pair a controller
         press i/I to remove a controller
-        press o/O to reconnect a controller
         press p/P to connect all controllers that are available
-        press j/J to remove all the controllers that are paired
-        press k/K to reconnect all the controllers that are paired"
+        press j/J to remove all the controllers that are paired"
 
     // TODO: create config file
     // TODO show help message each time when return to this method.
@@ -213,22 +161,16 @@ let main _ =
             showPairedDevices () |> ignore
             onInputProcessFinished ()
         | ConsoleKey.U ->
-            pairDeviceByName ()
+            pairDeviceByInput ()
             onInputProcessFinished ()
         | ConsoleKey.I ->
-            removeDeviceByName ()
-            onInputProcessFinished ()
-        | ConsoleKey.O ->
-            reconnectDevice ()
+            removeDeviceByInput ()
             onInputProcessFinished ()
         | ConsoleKey.P ->
             connectAllControllers ()
             onInputProcessFinished ()
         | ConsoleKey.J ->
             removeAllControllers ()
-            onInputProcessFinished ()
-        | ConsoleKey.K ->
-            reconnectAllControllers ()
             onInputProcessFinished ()
         | ConsoleKey.H ->
             showHelpText ()

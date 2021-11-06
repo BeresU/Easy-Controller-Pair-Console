@@ -9,7 +9,7 @@ module Cache =
           DeviceData: BluetoothDeviceInfo }
 
     let cache =
-        Dictionary<string, BluetoothDeviceInfo>()
+        Dictionary<string, Device>()
 
     let existInCache deviceKey = cache.ContainsKey deviceKey
 
@@ -17,7 +17,7 @@ module Cache =
     let getDeviceFromCache deviceKey =
         match cache.TryGetValue deviceKey with
         | true, v -> v
-        | false, _ -> null
+        | false, _ -> Unchecked.defaultof<Device>
 
     let removeFromCache deviceKey = cache.Remove deviceKey
 
@@ -27,4 +27,4 @@ module Cache =
         cache.Clear()
 
         devices
-        |> List.iter (fun device -> cache.Add(device.DeviceKey, device.DeviceData))
+        |> List.iter (fun device -> cache.Add(device.DeviceKey, device))
