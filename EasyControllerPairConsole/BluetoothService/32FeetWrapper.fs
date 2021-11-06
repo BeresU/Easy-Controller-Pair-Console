@@ -25,8 +25,8 @@ module BluetoothService =
         devices |> List.ofArray
 
     // TODO: this is a pair request
-    let pairController (deviceAddress: BluetoothAddress)  =
+    let pairDevice (deviceAddress: BluetoothAddress)  =
         BluetoothSecurity.PairRequest(deviceAddress, "5555")
 
     // TODO: remove
-    let removePairedController deviceAddress = BluetoothSecurity.RemoveDevice(deviceAddress)
+    let removePairedDevice deviceAddress = BluetoothSecurity.RemoveDevice(deviceAddress)

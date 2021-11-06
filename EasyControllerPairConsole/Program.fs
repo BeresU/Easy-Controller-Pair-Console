@@ -67,8 +67,33 @@ let main _ =
                         $"\t* name: %s{device.DeviceKey}, connected: %b{device.DeviceData.Connected}, address: %s{device.DeviceData.DeviceAddress.ToString()}\n")
 
             true
-            
-    
+
+    let pairDevice device =
+        let success =
+            pairDevice device.DeviceData.DeviceAddress
+
+        match success with
+        | false ->
+            printfn $"something went wrong, couldn't connect %s{device.DeviceKey}"
+            false
+        | true ->
+            printfn $"%s{device.DeviceKey} paired successfully"
+            removeFromCache device.DeviceKey |> ignore
+            true
+
+    let removePairedDevice device =
+        printfn $"removing device: %s{device.DeviceKey}"
+
+        match device.DeviceData.DeviceAddress
+              |> removePairedDevice with
+        | true ->
+            printfn $"device: %s{device.DeviceKey} was removed"
+            true
+        | false ->
+            printfn $"something went wrong, couldn't remove device: %s{device.DeviceKey}"
+            false
+
+
     let rec pairDeviceByInput () =
         match cacheIsEmpty () with
         | true ->
@@ -83,15 +108,7 @@ let main _ =
             | true ->
                 printfn "pairing device"
                 let device = getDeviceFromCache input
-
-                let success =
-                    pairController device.DeviceData.DeviceAddress 
-
-                match success with
-                | false -> printfn $"something went wrong, couldn't connect %s{input}"
-                | true ->
-                    printfn $"%s{input} paired successfully"
-                    removeFromCache input |> ignore
+                pairDevice device |> ignore
             | false ->
                 match String.IsNullOrEmpty input with
                 | true -> () // return
@@ -117,13 +134,7 @@ let main _ =
                     |> List.tryFind (fun device -> device.DeviceKey = input)
 
                 match selectedDevice.IsSome with
-                | true ->
-                    printfn $"removing device: %s{input}"
-
-                    match selectedDevice.Value.DeviceData.DeviceAddress
-                          |> removePairedController with
-                    | true -> printfn $"device: %s{input} was removed"
-                    | false -> printfn $"something went wrong, couldn't remove device: %s{input}"
+                | true -> removePairedDevice selectedDevice.Value |> ignore
                 | false ->
                     printfn $"The device: %s{input} is not valid please select device that is paired"
                     removeDeviceByInput ()
