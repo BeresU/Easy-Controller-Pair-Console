@@ -2,6 +2,7 @@ open System
 open BluetoothService
 open BluetoothService
 open Cache
+open InTheHand.Net.Bluetooth
 open InTheHand.Net.Sockets
 
 [<EntryPoint>]
@@ -45,7 +46,8 @@ let main _ =
             devicesToCache
             |> List.iter
                 (fun device ->
-                    printfn $"\t* name: %s{device.DeviceKey}, address: %s{device.DeviceData.DeviceAddress.ToString()}")
+                    printfn
+                        $"\t* name: %s{device.DeviceKey}, address: %s{device.DeviceData.DeviceAddress.ToString()}, device type: %s{device.DeviceData.ClassOfDevice.Device.ToString()}")
 
             true
 
@@ -64,7 +66,7 @@ let main _ =
             |> List.iter
                 (fun device ->
                     printfn
-                        $"\t* name: %s{device.DeviceKey}, connected: %b{device.DeviceData.Connected}, address: %s{device.DeviceData.DeviceAddress.ToString()}\n")
+                        $"\t* name: %s{device.DeviceKey}, connected: %b{device.DeviceData.Connected}, address: %s{device.DeviceData.DeviceAddress.ToString()}, device type: %s{device.DeviceData.ClassOfDevice.Device.ToString()}\n")
 
             true
 
@@ -123,7 +125,7 @@ let main _ =
         | 0 -> printfn "no device are paired!"
         | _ ->
             printfn $"%s{insertDeviceMessage}"
-            let input = Console.ReadLine() //
+            let input = Console.ReadLine()
 
             match String.IsNullOrEmpty input with
             | true -> () // return
@@ -139,10 +141,102 @@ let main _ =
                     printfn $"The device: %s{input} is not valid please select device that is paired"
                     removeDeviceByInput ()
 
-    let connectAllControllers () =
-        printfn "connecting all available controllers" // TODO: log all controllers
+    let rec connectAllDevicesByInput () =
+        printfn
+            "please insert device type, empty type will take you back, insert \"all\" to connect all available devices"
 
-    let removeAllControllers () = printfn "removing all controllers" // TODO: log all controllers
+        let input = Console.ReadLine()
+
+        let connectDevices (devices: Device list) =
+            printfn "available devices:"
+
+            devices
+            |> List.iter
+                (fun device ->
+                    printfn $"device name: {device.DeviceKey}, address: %s{device.DeviceData.DeviceAddress.ToString()}")
+
+            devices
+            |> List.iter (fun device -> pairDevice device |> ignore)
+
+        match input with
+        | "" -> () // return
+        | "all" ->
+            // TODO: get from cache
+            printfn "connecting all available devices!"
+
+            let devices =
+                getAllAvailableDevices () |> mapToDeviceData
+
+            match devices.Length with
+            | 0 -> printfn "there are no available devices!"
+            | _ -> connectDevices devices
+
+        | _ ->
+            match Enum.TryParse<DeviceClass>(input) with
+            | false, _ ->
+                printfn $"the type: %s{input} is invalid"
+                connectAllDevicesByInput ()
+            | true, deviceType ->
+                let devices =
+                    getAllAvailableDevices ()
+                    |> List.filter (fun device -> device.ClassOfDevice.Device = deviceType)
+                    |> mapToDeviceData
+
+                match devices.Length with
+                | 0 ->
+                    printfn $"there are no devices of type: %s{input}"
+                    connectAllDevicesByInput ()
+                | _ -> connectDevices devices
+
+
+
+    let rec removeAllControllersByInput () =
+        printfn
+            "please insert device type, empty type will take you back, insert \"all\" to connect all available devices"
+
+        let input = Console.ReadLine()
+
+        let removeDevices (devices: Device list) =
+            printfn "removing devices:"
+
+            devices
+            |> List.iter
+                (fun device ->
+                    printfn $"device name: {device.DeviceKey}")
+
+            devices
+            |> List.iter (fun device -> removePairedDevice device |> ignore)
+
+        match input with
+        | "" -> () // return
+        | "all" ->
+            // TODO: get from cache
+            printfn "removing all paired devices!"
+
+            let devices =
+                getAllPairedDevices () |> mapToDeviceData
+
+            match devices.Length with
+            | 0 -> printfn "there are no paired devices!"
+            | _ -> removeDevices devices
+
+        | _ ->
+            match Enum.TryParse<DeviceClass>(input) with
+            | false, _ ->
+                printfn $"the type: %s{input} is invalid"
+                removeAllControllersByInput ()
+            | true, deviceType ->
+                let devices =
+                    getAllPairedDevices ()
+                    |> List.filter (fun device -> device.ClassOfDevice.Device = deviceType)
+                    |> mapToDeviceData
+
+                match devices.Length with
+                | 0 ->
+                    printfn $"there are no devices of type: %s{input} that are paired!"
+                    removeAllControllersByInput ()
+                | _ -> removeDevices devices
+
 
 
     // TODO: load from file (for practice)
@@ -178,10 +272,10 @@ let main _ =
             removeDeviceByInput ()
             onInputProcessFinished ()
         | ConsoleKey.P ->
-            connectAllControllers ()
+            connectAllDevicesByInput ()
             onInputProcessFinished ()
         | ConsoleKey.J ->
-            removeAllControllers ()
+            removeAllControllersByInput ()
             onInputProcessFinished ()
         | ConsoleKey.H ->
             showHelpText ()
