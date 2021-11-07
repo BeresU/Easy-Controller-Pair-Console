@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="15d688f6-0612-44c1-8472-94551d7ca6f1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.EasyControllerPairConsole/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.EasyControllerPairConsole/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EasyControllerPairConsole/BluetoothService/Cache.fs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyControllerPairConsole/BluetoothService/Cache.fs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EasyControllerPairConsole/Program.fs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyControllerPairConsole/Program.fs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -91,6 +92,7 @@
       <workItem from="1635710013903" duration="26990000" />
       <workItem from="1636125801294" duration="16778000" />
       <workItem from="1636224183961" duration="2874000" />
+      <workItem from="1636313489432" duration="2358000" />
     </task>
     <servers />
   </component>

@@ -83,7 +83,6 @@ let main _ =
             false
         | true ->
             printfn $"%s{device.DeviceKey} paired successfully"
-            removeFromCache device.DeviceKey |> ignore
             true
 
     let removePairedDevice device =
@@ -167,7 +166,10 @@ let main _ =
             printfn "connecting all available devices!"
 
             let devices =
-                getAllAvailableDevices () |> mapToDeviceData
+                match cache.Count with
+                | 0 -> getAllAvailableDevices () |> mapToDeviceData
+                | _ -> cacheList ()
+
 
             match devices.Length with
             | 0 -> printfn "there are no available devices!"
@@ -179,10 +181,16 @@ let main _ =
                 printfn $"the type: %s{input} is invalid"
                 connectAllDevicesByInput ()
             | true, deviceType ->
+
                 let devices =
-                    getAllAvailableDevices ()
-                    |> List.filter (fun device -> device.ClassOfDevice.Device = deviceType)
-                    |> mapToDeviceData
+                    match cache.Count with
+                    | 0 ->
+                        getAllAvailableDevices ()
+                        |> List.filter (fun device -> device.ClassOfDevice.Device = deviceType)
+                        |> mapToDeviceData
+                    | _ ->
+                        cacheList ()
+                        |> List.filter (fun device -> device.DeviceData.ClassOfDevice.Device = deviceType)
 
                 match devices.Length with
                 | 0 ->

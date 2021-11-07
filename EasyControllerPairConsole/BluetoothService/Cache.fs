@@ -8,8 +8,13 @@ module Cache =
         { DeviceKey: string
           DeviceData: BluetoothDeviceInfo }
 
-    let cache =
-        Dictionary<string, Device>()
+    let cache = Dictionary<string, Device>()
+
+    let cacheList() =
+        cache
+        |> Seq.map (|KeyValue|)
+        |> Seq.toList
+        |> List.map snd
 
     let existInCache deviceKey = cache.ContainsKey deviceKey
 
