@@ -28,6 +28,9 @@ let main _ =
     let insertDeviceMessage =
         "\nplease insert device name, empty name will bring you back"
 
+    let insertDeviceTypeMessage =
+        "\nplease insert device type, empty type will take you back, insert \"all\" to connect all available devices"
+
     // TODO: consider doing this in parallel and let the user interact with the app
     // TODO: merge similar methods to minimize boiler plate.
     let showAvailableDevices () =
@@ -142,8 +145,7 @@ let main _ =
                     removeDeviceByInput ()
 
     let rec connectAllDevicesByInput () =
-        printfn
-            "please insert device type, empty type will take you back, insert \"all\" to connect all available devices"
+        printfn $"%s{insertDeviceTypeMessage}"
 
         let input = Console.ReadLine()
 
@@ -191,8 +193,7 @@ let main _ =
 
 
     let rec removeAllControllersByInput () =
-        printfn
-            "please insert device type, empty type will take you back, insert \"all\" to connect all available devices"
+        printfn $"%s{insertDeviceTypeMessage}"
 
         let input = Console.ReadLine()
 
@@ -200,9 +201,7 @@ let main _ =
             printfn "removing devices:"
 
             devices
-            |> List.iter
-                (fun device ->
-                    printfn $"device name: {device.DeviceKey}")
+            |> List.iter (fun device -> printfn $"device name: {device.DeviceKey}")
 
             devices
             |> List.iter (fun device -> removePairedDevice device |> ignore)
